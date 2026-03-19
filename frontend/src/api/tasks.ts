@@ -6,7 +6,7 @@ export async function createTask(text: string) {
         headers: {
         'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ title: text }),
+        body: JSON.stringify({ text: text }),
     });
 
     if (!response.ok) throw new Error('Failed to create task');

@@ -1,5 +1,7 @@
+require('dotenv').config();
 const express = require("express");
 const cors = require("cors");
+const prisma = require('./db');
 
 const app = express();
 const PORT = 3000;
@@ -9,29 +11,38 @@ app.use(express.json());
 
 app.get("/api/health", (req, res) => { res.json({ ok: true });});
 
+
+app.get("/api/items", async (req, res) => {
+    
+});
+
 app.get("/api/message", (req, res) => {
   res.json({ message: "Hello from the backend" });
 });
 
-let tasks = [
-  { id: 1, title: "Learn Express", done: false },
-  { id: 2, title: "Connect React to API", done: true },
-];
 
-app.get("/api/tasks", (req, res) => { res.json(tasks);});
+app.get("/api/tasks", async (req, res) => { 
+    try {
+        const tasks = await prisma.task.findMany({
+            orderBy: { id: 'desc' },
+        });
+        res.json(tasks);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch tasks' });
+    }
+});
 
-app.post("/api/tasks", (req, res) => {
-  const { title } = req.body;
-  if (!title || !title.trim()) return res.status(400).json({ error: "Title is required" });
-  
-  const newTask = {
-    id: tasks.length + 1,
-    title: title.trim(),
-    done: false,
-  };
-
-  tasks.push(newTask);
-  res.status(201).json(newTask);
+app.post("/api/tasks", async (req, res) => {
+    try {
+        const { text } = req.body;
+        if (!text || !text.trim()) return res.status(400).json({ error: 'Text is required' });
+        const task = await prisma.task.create({
+            data: { text: text.trim() },
+        });
+        res.status(201).json(task);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to create task' });
+    }
 });
 
 app.listen(PORT, () => {

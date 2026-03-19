@@ -4,13 +4,13 @@ import { createTask } from './api/tasks';
 import { fetchTasks } from './api/tasks';
 type Task = {
   id: number;
-  title: string;
+  text: string;
   done: boolean;
 };
 
 function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [title, setTitle] = useState("");
+  const [text, setText] = useState("");
   const apiUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
@@ -21,13 +21,13 @@ function App() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const trimmedTitle = title.trim();
-    if (!trimmedTitle) return;
+    const trimmedText = text.trim();
+    if (!trimmedText) return;
 
     try {
-      const newTask: Task = await createTask(trimmedTitle);
+      const newTask: Task = await createTask(trimmedText);
       setTasks((prevTasks) => [...prevTasks, newTask]);
-      setTitle("");
+      setText("");
     } catch (error) {
       console.error(error);
     }
@@ -39,9 +39,9 @@ function App() {
 
       <form onSubmit={handleSubmit}>
         <input
-          value={title}
+          value={text}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setTitle(e.target.value)
+            setText(e.target.value)
           }
           placeholder="New task"
         />
@@ -50,7 +50,7 @@ function App() {
 
       <ul>
         {tasks.map((task) => (
-          <li key={task.id}>{task.title} {task.done ? "✅" : ""}</li>
+          <li key={task.id}>{task.text} {task.done ? "✅" : ""}</li>
         ))}
       </ul>
     </div>
