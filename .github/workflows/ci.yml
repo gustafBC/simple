@@ -24,10 +24,20 @@ jobs:
 
       - name: Generate Prisma client
         working-directory: ./backend
+        env:
+          DATABASE_URL: file:./data/dev.db
         run: npx prisma generate
+
+      - name: Run Prisma migrations
+        working-directory: ./backend
+        env:
+          DATABASE_URL: file:./data/dev.db
+        run: npx prisma migrate deploy
 
       - name: Run backend tests
         working-directory: ./backend
+        env:
+          DATABASE_URL: file:./data/dev.db
         run: npm test
 
       - name: Install frontend dependencies
